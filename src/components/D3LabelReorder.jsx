@@ -173,7 +173,7 @@ const D3LabelReorder = () => {
             .attr("width", width)
             .attr("height", height);
 
-        // Scales
+        // Calculate the x-axis scale
         const x = d3
             .scaleTime()
             .domain([
@@ -182,11 +182,28 @@ const D3LabelReorder = () => {
             ])
             .range([margin.left, width - margin.right]);
 
+        // Calculate the y-axis scale
         const y = d3
             .scaleBand()
             .domain(data.map((d) => d.name))
             .range([margin.top, height - margin.bottom])
             .padding(0.1);
+
+        // Determine the tick interval dynamically
+        const dateRange = x.domain();
+        const diffInDays =
+            (dateRange[1] - dateRange[0]) / (1000 * 60 * 60 * 24); // Difference in days
+
+        let tickInterval;
+        if (diffInDays <= 10) {
+            tickInterval = d3.timeDay.every(1); // Daily ticks
+        } else if (diffInDays <= 30) {
+            tickInterval = d3.timeDay.every(5); // Every 5 days
+        } else if (diffInDays <= 365) {
+            tickInterval = d3.timeMonth.every(1); // Monthly ticks
+        } else {
+            tickInterval = d3.timeYear.every(1); // Yearly ticks
+        }
 
         // Draw bars
         svg.append("g")
@@ -202,10 +219,17 @@ const D3LabelReorder = () => {
             .attr("height", y.bandwidth())
             .attr("fill", (d) => d.color);
 
-        // Add X axis
-        svg.append("g")
-            .attr("transform", `translate(0,${height - margin.bottom})`)
-            .call(d3.axisBottom(x).ticks(d3.timeDay.every(1)));
+        // Add or update X axis with a dynamic tick interval
+        const xAxis = d3.axisBottom(x).ticks(tickInterval);
+
+        const xAxisGroup = svg
+            .append("g")
+            .attr("transform", `translate(0,${height - margin.bottom})`);
+
+        xAxisGroup
+            .transition()
+            .duration(750) // Smooth transition
+            .call(xAxis);
 
         // Add Y axis
         svg.append("g")
