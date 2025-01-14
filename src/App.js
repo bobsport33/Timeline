@@ -14,6 +14,7 @@ const AppContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 50px;
 `;
 
 function App() {
@@ -22,8 +23,8 @@ function App() {
             <h1>Timeline</h1>
             {/* <h1>D3</h1> */}
             <D3BarChart />
-            <D3LabelReorder />
             <D3Label2 />
+            <D3LabelReorder />
             {/* <h1>VisX</h1>
             <VisXBarChart />
             <ReactVis />

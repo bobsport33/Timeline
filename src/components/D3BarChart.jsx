@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
-const D3BarChart = () => {
+const D3HorizontalBarChart = () => {
     const chartRef = useRef();
     const [data, setData] = useState([
         { name: "A", value: 10 },
@@ -17,20 +17,20 @@ const D3BarChart = () => {
         // Set dimensions and margins
         const width = 600;
         const height = 300;
-        const margin = { top: 20, right: 30, bottom: 40, left: 40 };
+        const margin = { top: 20, right: 30, bottom: 40, left: 80 };
 
         // Create scales
         const x = d3
-            .scaleBand()
-            .domain(data.map((d) => d.name))
-            .range([margin.left, width - margin.right])
-            .padding(0.1);
-
-        const y = d3
             .scaleLinear()
             .domain([0, d3.max(data, (d) => d.value)])
             .nice()
-            .range([height - margin.bottom, margin.top]);
+            .range([margin.left, width - margin.right]);
+
+        const y = d3
+            .scaleBand()
+            .domain(data.map((d) => d.name))
+            .range([margin.top, height - margin.bottom])
+            .padding(0.1);
 
         // Create SVG container
         svg.attr("width", width).attr("height", height);
@@ -41,54 +41,66 @@ const D3BarChart = () => {
             .selectAll("rect")
             .data(data)
             .join("rect")
-            .attr("x", (d) => x(d.name))
-            .attr("y", (d) => y(d.value))
-            .attr("height", (d) => y(0) - y(d.value))
-            .attr("width", x.bandwidth())
+            .attr("x", margin.left)
+            .attr("y", (d) => y(d.name))
+            .attr("height", y.bandwidth())
+            .attr("width", (d) => x(d.value) - margin.left)
             .attr("fill", "#8884d8")
             .attr("cursor", "grab");
 
-        let initialX = null;
+        let draggedIndex = null;
 
         // Add drag behavior
         bars.call(
             d3
                 .drag()
                 .on("start", (event, d) => {
-                    initialX = x(d.name);
+                    draggedIndex = data.findIndex(
+                        (item) => item.name === d.name
+                    );
                     d3.select(event.sourceEvent.target)
                         .raise()
                         .attr("fill", "#4444d8");
                 })
                 .on("drag", (event, d) => {
-                    if (!initialX) return;
+                    if (!draggedIndex) return;
 
-                    const currentX = initialX + event.x;
-                    const draggedIndex = data.findIndex(
-                        (item) => item.name === d.name
-                    );
+                    const currentY = event.y;
 
-                    const newIndex = Math.floor(
-                        (currentX - margin.left) / x.step()
-                    );
+                    // Check for overlap with other bars
+                    let targetIndex = null;
+                    bars.each(function (e, i) {
+                        if (i !== draggedIndex) {
+                            const rect = this.getBoundingClientRect();
+                            const rectY = rect.top;
 
-                    if (
-                        newIndex !== draggedIndex &&
-                        newIndex >= 0 &&
-                        newIndex < data.length
-                    ) {
+                            // If dragged bar is over the other bar, update the targetIndex
+                            if (
+                                currentY > rectY &&
+                                currentY < rectY + y.bandwidth()
+                            ) {
+                                targetIndex = i;
+                            }
+                        }
+                    });
+
+                    if (targetIndex !== null && targetIndex !== draggedIndex) {
+                        // Swap the data positions
                         const updatedData = [...data];
-                        const [moved] = updatedData.splice(draggedIndex, 1);
-                        updatedData.splice(newIndex, 0, moved);
+                        const draggedBar = updatedData.splice(
+                            draggedIndex,
+                            1
+                        )[0];
+                        updatedData.splice(targetIndex, 0, draggedBar);
                         setData(updatedData);
 
-                        // Update the scales
-                        x.domain(updatedData.map((item) => item.name));
-                        initialX = x(d.name); // Recalculate the initial X position
+                        // Update the scale after swap
+                        y.domain(updatedData.map((item) => item.name));
+                        draggedIndex = targetIndex; // Recalculate the draggedIndex
                     }
                 })
                 .on("end", (event) => {
-                    initialX = null;
+                    draggedIndex = null;
                     d3.select(event.sourceEvent.target).attr("fill", "#8884d8");
                 })
         );
@@ -107,4 +119,4 @@ const D3BarChart = () => {
     return <svg ref={chartRef}></svg>;
 };
 
-export default D3BarChart;
+export default D3HorizontalBarChart;

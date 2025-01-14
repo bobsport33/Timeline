@@ -1,0 +1,59 @@
+[
+    {
+        "start_date": "2010-01-01",
+        "end_date": "2020-01-01",
+        "pre_idx_time": "2010-01-01",
+        "post_idx_time": "184 days, 0:00:00",
+        "supergroups": {
+            "diseases": [
+                "Regional enteritis and ulcerative colitis",
+                "Ankylosing spondylitis",
+                "Other inflammatory condition of skin"
+            ],
+            "drugs": ["IMMUNOSUPPRESSANTS", "TNF inhibitors", "Methotrexate"],
+            "procs": [],
+            "labs": []
+        },
+        "categories": {
+            "diseases": [
+                "Psoriasis",
+                "Ankylosing spondylitis",
+                "Crohn's disease"
+            ],
+            "drugs": ["Azathioprine", "TNF inhibitors", "Methotrexate"],
+            "procs": [],
+            "labs": []
+        },
+        "pre_post_any_both": {
+            "diseases": "any",
+            "drugs": "any",
+            "procs": "any",
+            "labs": "any"
+        },
+        "time_pre": {
+            "diseases": 0,
+            "drugs": 0,
+            "procs": 0,
+            "labs": 0
+        },
+        "time_post": {
+            "diseases": 100,
+            "drugs": 100,
+            "procs": 100,
+            "labs": 100
+        },
+        "age_requirement": {
+            "min": 18,
+            "max": 125,
+            "additional_properties": {}
+        },
+        "gender_requirement": null,
+        "pharmacy_plan_req": false,
+        "ce_gaps": 0,
+        "ie_rules": {},
+        "indexing_and_or": "or",
+        "db_name": "Marketscan Commercial",
+        "washout_days": 0,
+        "washout_in_study_period": true
+    }
+]

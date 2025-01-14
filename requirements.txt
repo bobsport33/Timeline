@@ -1,0 +1,14 @@
+1. Drag and drop each row.
+2. Change study parameters from study design figure.
+    i.e., can we change the study period by shrinking the row within the diagram. To interconnect it with rest of front end.
+3. Customize colors for each bar.
+4. Customize both physical text and font selection.
+5. Allow for export to PowerPoint.
+6. Hover tool tips, customize what they say.
+7. Auto sizing.
+8. Should be able to delete and/or hide rows.
+    If delete, then remove parameter selection from actual cohort build.
+9. Allow users to zoom and scroll.
+10. Study design hover over on each tab (nice to have)
+    a. Would live as a pop up on each tab of go/eod
+ 
