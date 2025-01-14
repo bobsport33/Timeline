@@ -26,7 +26,7 @@ function App() {
             <D3Label2 />
             {/* <h1>VisX</h1>
             <VisXBarChart />
-            {/* <ReactVis /> */}
+            <ReactVis />
             <h1>Recharts</h1>
             <Recharts />
             <h1>Chart.Js</h1>
