@@ -48,6 +48,18 @@ const D3HorizontalBarChart = () => {
             .attr("fill", "#8884d8")
             .attr("cursor", "grab");
 
+        // Add text inside the bars
+        svg.append("g")
+            .selectAll("text")
+            .data(data)
+            .join("text")
+            .attr("x", (d) => margin.left + x(d.value) / 2) // Position at the center of the bar
+            .attr("y", (d) => y(d.name) + y.bandwidth() / 2) // Position vertically at the center of the bar
+            .attr("dy", ".35em") // Vertically align the text at the center
+            .attr("text-anchor", "middle")
+            .attr("fill", "white") // Text color inside the bars
+            .text((d) => d.value); // Display the value inside the bar
+
         let draggedIndex = null;
 
         // Add drag behavior

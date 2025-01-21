@@ -202,6 +202,23 @@ const D3Label2 = () => {
             .attr("height", y.bandwidth())
             .attr("fill", (d) => d.color);
 
+        // Add text inside the bars
+        svg.append("g")
+            .selectAll("text")
+            .data(data)
+            .join("text")
+            .attr(
+                "x",
+                (d) =>
+                    x(new Date(d.startDate)) +
+                    (x(new Date(d.endDate)) - x(new Date(d.startDate))) / 2
+            ) // Position at the center of the bar
+            .attr("y", (d) => y(d.name) + y.bandwidth() / 2) // Position vertically at the center of the bar
+            .attr("dy", ".35em") // Vertically align the text at the center
+            .attr("text-anchor", "middle")
+            .attr("fill", "white") // Text color inside the bars
+            .text((d) => d.name); // Display the name inside the bar (or adjust to show other data)
+
         // Add or update X axis with a dynamic tick interval
         const xAxis = d3.axisBottom(x).ticks(tickInterval);
 

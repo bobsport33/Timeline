@@ -15,6 +15,8 @@
         "@visx/shape": "^3.12.0",
         "chart.js": "^4.4.7",
         "chartjs-adapter-date-fns": "^3.0.0",
+        "chartjs-plugin-dragdata": "^2.3.1",
+        "chartjs-plugin-zoom": "^2.2.0",
         "cra-template": "1.2.0",
         "d3": "^7.9.0",
         "date-fns": "^4.1.0",

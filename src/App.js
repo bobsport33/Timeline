@@ -29,9 +29,10 @@ function App() {
             <VisXBarChart />
             <ReactVis />
             <h1>Recharts</h1>
-            <Recharts />
+            <Recharts /> 
+            <Recharts /> */}
             <h1>Chart.Js</h1>
-            <ChartJs /> */}
+            <ChartJs />
             {/* <MuiCharts /> */}
         </AppContainer>
     );

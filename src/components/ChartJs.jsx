@@ -9,31 +9,49 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import "chartjs-adapter-date-fns";
+import zoomPlugin from "chartjs-plugin-zoom";
+import dragDataPlugin from "chartjs-plugin-dragdata";
 
 // Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, TimeScale, Tooltip);
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    TimeScale,
+    Tooltip,
+    zoomPlugin,
+    dragDataPlugin
+);
 
 const ChartJs = () => {
     const [data] = useState([
         {
             name: "Task A",
-            startDate: "2025-01-01",
+            startDate: "2010-01-01",
             endDate: "2025-01-10",
             color: "#071d49",
         },
         {
             name: "Task B",
-            startDate: "2025-01-05",
+            startDate: "2015-01-05",
             endDate: "2025-01-15",
             color: "#1a73e8",
         },
         {
             name: "Task C",
-            startDate: "2025-01-07",
-            endDate: "2025-01-20",
+            startDate: "2020-01-07",
+            endDate: "2030-01-20",
             color: "#34a853",
         },
     ]);
+
+    // Get min and max dates
+    const allDates = data.flatMap((task) => [
+        new Date(task.startDate),
+        new Date(task.endDate),
+    ]);
+    const minDate = Math.min(...allDates); // Earliest date in the dataset
+    const maxDate = Math.max(...allDates); // Latest date in the dataset
 
     // Prepare the dataset with start and end date positions
     const chartData = {
@@ -42,12 +60,12 @@ const ChartJs = () => {
             {
                 label: "Tasks",
                 data: data.map((task) => ({
-                    x: new Date(task.startDate).getTime(),
-                    x2: new Date(task.endDate).getTime(),
+                    x: [new Date(task.startDate), new Date(task.endDate)], // Define range
                     y: task.name,
                 })),
                 backgroundColor: data.map((task) => task.color),
-                barThickness: 20,
+                borderColor: "black",
+                borderWidth: 1,
             },
         ],
     };
@@ -58,14 +76,16 @@ const ChartJs = () => {
         maintainAspectRatio: false,
         scales: {
             x: {
-                type: "time",
+                type: "time", // Use time scale for the x-axis
                 time: {
-                    unit: "month",
+                    unit: "year",
                 },
                 title: {
                     display: true,
                     text: "Date",
                 },
+                min: minDate, // Dynamically set min based on data
+                max: maxDate, // Dynamically set max based on data
             },
             y: {
                 title: {
@@ -78,14 +98,41 @@ const ChartJs = () => {
             },
         },
         plugins: {
-            tooltip: {
-                callbacks: {
-                    label: (context) => {
-                        const { x, x2 } = context.raw;
-                        const startDate = new Date(x).toLocaleDateString();
-                        const endDate = new Date(x2).toLocaleDateString();
-                        return `From: ${startDate} To: ${endDate}`;
+            zoom: {
+                pan: {
+                    enabled: true,
+                    mode: "x", // Pan only on the x-axis
+                    onPan: () => {
+                        console.log("Panning...");
                     },
+                },
+                zoom: {
+                    wheel: {
+                        enabled: true, // Enable zooming with the mouse wheel
+                    },
+                    mode: "x", // Zoom only on the x-axis
+                    onZoom: () => {
+                        console.log("Zooming...");
+                    },
+                },
+            },
+            dragData: {
+                dragX: true,
+                showTooltip: true,
+                onDragStart: (event, dataset, index, value) => {
+                    console.log("Drag started", event, dataset, index, value);
+                    // Temporarily disable zoom/pan
+                    chartOptions.plugins.zoom.pan.enabled = false;
+                    chartOptions.plugins.zoom.zoom.wheel.enabled = false;
+                },
+                onDrag: (event, dataset, index, value) => {
+                    console.log("Dragging", event, dataset, index, value);
+                },
+                onDragEnd: (event, dataset, index, value) => {
+                    console.log("Drag ended", event, dataset, index, value);
+                    // Re-enable zoom/pan
+                    chartOptions.plugins.zoom.pan.enabled = true;
+                    chartOptions.plugins.zoom.zoom.wheel.enabled = true;
                 },
             },
         },
