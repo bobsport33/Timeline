@@ -10,6 +10,7 @@ import {
 import { Bar } from "react-chartjs-2";
 import "chartjs-adapter-date-fns";
 import zoomPlugin from "chartjs-plugin-zoom";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import dragDataPlugin from "chartjs-plugin-dragdata";
 
 // Register Chart.js components
@@ -20,7 +21,8 @@ ChartJS.register(
     TimeScale,
     Tooltip,
     zoomPlugin,
-    dragDataPlugin
+    dragDataPlugin,
+    ChartDataLabels
 );
 
 const ChartJs = () => {
@@ -53,6 +55,13 @@ const ChartJs = () => {
     const minDate = Math.min(...allDates); // Earliest date in the dataset
     const maxDate = Math.max(...allDates); // Latest date in the dataset
 
+    console.log(
+        "calc data",
+        data.map((task) => ({
+            x: [new Date(task.startDate), new Date(task.endDate)], // Define range
+            y: task.name,
+        }))
+    );
     // Prepare the dataset with start and end date positions
     const chartData = {
         labels: data.map((task) => task.name),
@@ -98,6 +107,13 @@ const ChartJs = () => {
             },
         },
         plugins: {
+            datalabels: {
+                align: "center", // Center align the labels on the bar
+                anchor: "center", // Anchor the label in the middle of the bar
+                color: "white", // Adjust text color for readability
+                formatter: (value, context) =>
+                    context.chart.data.labels[context.dataIndex],
+            },
             zoom: {
                 pan: {
                     enabled: true,
