@@ -4,11 +4,9 @@ import {
     CategoryScale,
     LinearScale,
     BarElement,
-    TimeScale,
     Tooltip,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import "chartjs-adapter-date-fns";
 import zoomPlugin from "chartjs-plugin-zoom";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import dragDataPlugin from "chartjs-plugin-dragdata";
@@ -18,14 +16,13 @@ ChartJS.register(
     CategoryScale,
     LinearScale,
     BarElement,
-    TimeScale,
     Tooltip,
     zoomPlugin,
     dragDataPlugin,
     ChartDataLabels
 );
 
-const ChartJs = () => {
+const ChartJsNumeric = () => {
     const chartRef = useRef(null);
     const [data] = useState([
         {
@@ -48,29 +45,25 @@ const ChartJs = () => {
         },
     ]);
 
-    // Get min and max dates
-    const allDates = data.flatMap((task) => [
-        new Date(task.startDate),
-        new Date(task.endDate),
+    // Extract years for min and max
+    const allYears = data.flatMap((task) => [
+        new Date(task.startDate).getFullYear(),
+        new Date(task.endDate).getFullYear(),
     ]);
-    const minDate = Math.min(...allDates); // Earliest date in the dataset
-    const maxDate = Math.max(...allDates); // Latest date in the dataset
+    const minYear = Math.min(...allYears); // Earliest year
+    const maxYear = Math.max(...allYears); // Latest year
 
-    console.log(
-        "calc data",
-        data.map((task) => ({
-            x: [new Date(task.startDate), new Date(task.endDate)], // Define range
-            y: task.name,
-        }))
-    );
-    // Prepare the dataset with start and end date positions
+    // Prepare the dataset with start and end year positions
     const chartData = {
         labels: data.map((task) => task.name),
         datasets: [
             {
                 label: "Tasks",
                 data: data.map((task) => ({
-                    x: [new Date(task.startDate), new Date(task.endDate)], // Define range
+                    x: [
+                        new Date(task.startDate).getFullYear(),
+                        new Date(task.endDate).getFullYear(),
+                    ], // Year range
                     y: task.name,
                 })),
                 backgroundColor: data.map((task) => task.color),
@@ -86,16 +79,17 @@ const ChartJs = () => {
         maintainAspectRatio: false,
         scales: {
             x: {
-                type: "time", // Use time scale for the x-axis
-                time: {
-                    unit: "year",
-                },
+                type: "linear", // Use linear scale for numeric years
                 title: {
                     display: true,
-                    text: "Date",
+                    text: "Year",
                 },
-                min: minDate, // Dynamically set min based on data
-                max: maxDate, // Dynamically set max based on data
+                min: minYear, // Dynamically set min based on years
+                max: maxYear, // Dynamically set max based on years
+                ticks: {
+                    stepSize: 1, // Ensure ticks increment by 1 year
+                    callback: (value) => Math.floor(value), // Display only whole numbers
+                },
             },
             y: {
                 title: {
@@ -119,18 +113,12 @@ const ChartJs = () => {
                 pan: {
                     enabled: true,
                     mode: "x", // Pan only on the x-axis
-                    onPan: () => {
-                        console.log("Panning...");
-                    },
                 },
                 zoom: {
                     wheel: {
                         enabled: true, // Enable zooming with the mouse wheel
                     },
                     mode: "x", // Zoom only on the x-axis
-                    onZoom: () => {
-                        console.log("Zooming...");
-                    },
                 },
             },
             dragData: {
@@ -144,24 +132,20 @@ const ChartJs = () => {
                     chartOptions.plugins.zoom.zoom.wheel.enabled = false;
                 },
                 onDrag: (event, dataset, index, value) => {
-                    console.log("Dragging", event, dataset, index, value);
+                    // console.log("Dragging", event, dataset, index, value);
                 },
                 onDragEnd: (event, dataset, index, value) => {
-                    console.log("Drag ended", event, dataset, index, value);
+                    // console.log("Drag ended", event, dataset, index, value);
                     const chart = chartRef.current;
-                    console.log("chart", chart);
+
                     if (!chart) return;
 
-                    // Get the x-axis scale
-                    const xScale = chart.scales.x;
-
                     // Convert the x-coordinate (in pixels) to a date value
-                    const draggedDate = xScale.getValueForPixel(value.x);
+                    const draggedYear = Math.floor(value.x);
 
                     // Log the dragged date and year
-                    console.log("Dragged date:", draggedDate);
-                    const year = new Date(draggedDate).getFullYear();
-                    console.log("Dragged year:", year);
+                    console.log("Dragged date:", draggedYear);
+
                     // Re-enable zoom/pan
                     chartOptions.plugins.zoom.pan.enabled = true;
                     chartOptions.plugins.zoom.zoom.wheel.enabled = true;
@@ -177,4 +161,4 @@ const ChartJs = () => {
     );
 };
 
-export default ChartJs;
+export default ChartJsNumeric;
