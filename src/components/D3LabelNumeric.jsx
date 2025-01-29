@@ -176,6 +176,7 @@ const D3LabelNumeric = () => {
                 const newX = transform.rescaleX(x);
 
                 xAxisGroup.call(xAxis.scale(newX));
+
                 bars.attr("x", (d) =>
                     Math.max(
                         margin.left,
@@ -199,6 +200,22 @@ const D3LabelNumeric = () => {
                         )
                     )
                     .text((d) => d.name);
+
+                // Update start handles
+                d3.selectAll("circle.start-handle").attr("cx", (d) =>
+                    Math.max(
+                        margin.left,
+                        newX(new Date(d.startDate).getFullYear())
+                    )
+                );
+
+                // Update end handles
+                d3.selectAll("circle.end-handle").attr("cx", (d) =>
+                    Math.max(
+                        margin.left,
+                        newX(new Date(d.endDate).getFullYear())
+                    )
+                );
             });
 
         svg.call(zoom);
@@ -211,6 +228,7 @@ const D3LabelNumeric = () => {
             .join("rect")
             .attr("x", (d) => x(new Date(d.startDate).getFullYear()))
             .attr("y", (d) => y(d.name))
+            .attr("id", (d) => d.name)
             .attr(
                 "width",
                 (d) =>
@@ -219,7 +237,7 @@ const D3LabelNumeric = () => {
             )
             .attr("height", y.bandwidth())
             .attr("fill", (d) => d.color)
-            .style("transition", "x 0.5s, width 0.5s"); // Add CSS transition
+            .style("transition", "x 0.5s, width 0.5s");
 
         const dragHandleRadius = 6;
 
@@ -229,7 +247,9 @@ const D3LabelNumeric = () => {
                 event.sourceEvent.stopPropagation(); // Prevent zooming while dragging
             })
             .on("drag", (event, d) => {
-                const newStartYear = Math.round(x.invert(event.x));
+                const [mouseX] = d3.pointer(event, svg.node()); // Get correct X in SVG space
+                const newStartYear = Math.round(x.invert(mouseX)); // Convert back to data space
+
                 if (newStartYear < new Date(d.endDate).getFullYear()) {
                     d.startDate = `${newStartYear}-01-01`;
                     updateChart();
@@ -242,7 +262,9 @@ const D3LabelNumeric = () => {
                 event.sourceEvent.stopPropagation(); // Prevent zooming while dragging
             })
             .on("drag", (event, d) => {
-                const newEndYear = Math.round(x.invert(event.x));
+                const [mouseX] = d3.pointer(event, svg.node()); // Get correct X in SVG space
+                const newEndYear = Math.round(x.invert(mouseX)); // Convert back to data space
+
                 if (newEndYear > new Date(d.startDate).getFullYear()) {
                     d.endDate = `${newEndYear}-01-01`;
                     updateChart();
@@ -261,6 +283,7 @@ const D3LabelNumeric = () => {
             .attr("fill", "#fff")
             .attr("stroke", "#000")
             .attr("cursor", "ew-resize")
+            .style("transition", "x 0.5s, width 0.5s")
             .call(dragStartHandle);
 
         // Add drag handles at the end of the bars
@@ -275,6 +298,7 @@ const D3LabelNumeric = () => {
             .attr("fill", "#fff")
             .attr("stroke", "#000")
             .attr("cursor", "ew-resize")
+            .style("transition", "x 0.5s, width 0.5s")
             .call(dragEndHandle);
 
         const labels = svg
@@ -306,10 +330,23 @@ const D3LabelNumeric = () => {
             .attr("transform", `translate(${margin.left},0)`)
             .call(d3.axisLeft(y));
 
+        // Needed to make rerender on drag and drop
         const updateChart = () => {
             setData([...data]); // Trigger a re-render
         };
     }, [data]);
+
+    document.addEventListener("contextmenu", (e) => {
+        // if e.target.id is one of the names in the data array, show custom modal instead to edit that element in the array
+        const entry = data.find((entry) => entry.name === e.target.id);
+
+        console.log("entry", entry);
+        if (entry) {
+            e.preventDefault();
+        }
+
+        // else do nothing
+    });
 
     return (
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
