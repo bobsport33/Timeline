@@ -250,6 +250,16 @@ const D3LabelNumeric = () => {
                 const [mouseX] = d3.pointer(event, svg.node()); // Get correct X in SVG space
                 const newStartYear = Math.round(x.invert(mouseX)); // Convert back to data space
 
+                console.log({
+                    mouseX,
+                    mouseXAdjusted: mouseX - dragHandleRadius,
+                    invertedYear: x.invert(mouseX),
+                    roundedYear: Math.round(x.invert(mouseX)),
+                });
+
+                // TODO: Mouse is moving slightly ahead of drag dots. The newStartYear is getting logged as where the mouse is, whereas the visual is sometimes a year or two off
+                console.log("newyear", newStartYear);
+
                 if (newStartYear < new Date(d.endDate).getFullYear()) {
                     d.startDate = `${newStartYear}-01-01`;
                     updateChart();
