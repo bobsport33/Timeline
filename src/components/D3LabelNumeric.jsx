@@ -248,7 +248,7 @@ const D3LabelNumeric = () => {
             })
             .on("drag", (event, d) => {
                 const [mouseX] = d3.pointer(event, svg.node()); // Get correct X in SVG space
-                const newStartYear = Math.round(x.invert(mouseX)); // Convert back to data space
+                const newStartYear = Math.floor(x.invert(mouseX)); // Convert back to data space
 
                 console.log({
                     mouseX,
