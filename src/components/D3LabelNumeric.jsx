@@ -1,6 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
+import styled from "styled-components";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+
+const Menu = styled.div`
+    position: absolute;
+
+    background: white;
+    border: 1px solid gray;
+    padding: 10px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+`;
 
 const DraggableBar = ({
     name,
@@ -26,13 +37,13 @@ const DraggableBar = ({
             moveItem(fromIndex, toIndex);
         }
     };
+    const handleColorInputChange = (e) => {
+        console.log(" color change", e);
+    };
 
     const handleDragOver = (e) => e.preventDefault();
 
     const handleInputChange = (e) => handleLabelChange(index, e.target.value);
-
-    const handleColorInputChange = (e) =>
-        handleColorChange(index, e.target.value);
 
     const handleStartDateChange = (e) =>
         handleDateChange(index, "start", e.target.value);
@@ -140,6 +151,47 @@ const D3LabelNumeric = () => {
         setData(updatedData);
     };
 
+    const [menu, setMenu] = useState({
+        visible: false,
+        x: 0,
+        y: 0,
+        selectedBar: null,
+    });
+    const menuRef = useRef();
+
+    // const handleRightClick = (event, d) => {
+    //     event.preventDefault(); // Prevent the default context menu
+
+    //     setContextMenu({
+    //         visible: true,
+    //         x: event.clientX,
+    //         y: event.clientY,
+    //         selectedBar: d,
+    //     });
+    // };
+
+    // const handleCloseMenu = () => {
+    //     setContextMenu(null);
+    // };
+
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            console.log("click outside event", event);
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setMenu({ visible: false, x: 0, y: 0, selectedBar: null });
+            }
+        };
+
+        if (menu.visible) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [menu.visible]);
+
     useEffect(() => {
         d3.select(chartRef.current).selectAll("*").remove();
 
@@ -236,6 +288,15 @@ const D3LabelNumeric = () => {
                     x(new Date(d.startDate).getFullYear())
             )
             .attr("height", y.bandwidth())
+            .on("contextmenu", (event, d) => {
+                event.preventDefault(); // Prevent the default right-click menu
+                setMenu({
+                    visible: true,
+                    x: event.clientX,
+                    y: event.clientY,
+                    selectedBar: d,
+                });
+            })
             .attr("fill", (d) => d.color)
             .style("transition", "x 0.5s, width 0.5s");
 
@@ -346,17 +407,26 @@ const D3LabelNumeric = () => {
         };
     }, [data]);
 
-    document.addEventListener("contextmenu", (e) => {
-        // if e.target.id is one of the names in the data array, show custom modal instead to edit that element in the array
-        const entry = data.find((entry) => entry.name === e.target.id);
+    // document.addEventListener("contextmenu", (e) => {
+    //     // if e.target.id is one of the names in the data array, show custom modal instead to edit that element in the array
+    //     const entry = data.find((entry) => entry.name === e.target.id);
 
-        console.log("entry", entry);
-        if (entry) {
-            e.preventDefault();
-        }
+    //     console.log("entry", entry);
+    //     if (entry) {
+    //         e.preventDefault();
+    //     }
 
-        // else do nothing
-    });
+    //     // else do nothing
+    // });
+    const handleColorInputChange = (e, selectedBar) => {
+        const newColor = e.target.value;
+
+        const selectedBarIndex = data.findIndex(
+            (d) => d.name === selectedBar.name
+        );
+
+        handleColorChange(selectedBarIndex, newColor);
+    };
 
     return (
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
@@ -377,6 +447,34 @@ const D3LabelNumeric = () => {
                 ))}
             </div>
             <svg ref={chartRef}></svg>
+
+            {/* Right click menu */}
+            {menu.visible && (
+                <Menu
+                    ref={menuRef}
+                    style={{
+                        top: menu.y,
+                        left: menu.x,
+                    }}
+                >
+                    <p>{menu.selectedBar.name}</p>
+                    <button
+                        onClick={() =>
+                            alert(`Editing ${menu.selectedBar.name}`)
+                        }
+                    >
+                        Edit
+                    </button>
+                    <input
+                        type="color"
+                        value={menu.selectedBar.color}
+                        onChange={(e) =>
+                            handleColorInputChange(e, menu.selectedBar)
+                        }
+                        style={{ marginLeft: "8px" }}
+                    />
+                </Menu>
+            )}
         </div>
     );
 };
