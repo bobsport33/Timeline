@@ -1,13 +1,9 @@
 import styled from "styled-components";
 
-import D3BarChart from "./components/D3BarChart";
-
-import D3LabelReorder from "./components/D3LabelReorder";
-import D3Label2 from "./components/D3Label2";
-
 import ChartJs from "./components/ChartJs";
 import ChartJsNumeric from "./components/ChartJsNumeric";
-import D3LabelNumeric from "./components/D3LabelNumeric";
+
+import D3Timeline from "./components/D3/D3Timeline";
 
 const AppContainer = styled.div`
     margin: 20px;
@@ -21,11 +17,8 @@ function App() {
     return (
         <AppContainer className="App">
             <h1>Timeline</h1>
-            {/* 
-            <D3BarChart />
-            <D3Label2 />
-            <D3LabelReorder /> */}
-            <D3LabelNumeric />
+
+            <D3Timeline />
             <ChartJs />
             <ChartJsNumeric />
         </AppContainer>

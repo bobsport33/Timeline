@@ -3,22 +3,14 @@ import * as d3 from "d3";
 import styled from "styled-components";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 
-const Menu = styled.div`
-    position: absolute;
-
-    background: white;
-    border: 1px solid gray;
-    padding: 10px;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-`;
+import Menu from "./Menu";
 
 const DraggableBar = ({
     name,
     index,
     moveItem,
     handleLabelChange,
-    handleColorChange,
+
     color,
     handleDateChange,
     startDate,
@@ -37,13 +29,8 @@ const DraggableBar = ({
             moveItem(fromIndex, toIndex);
         }
     };
-    const handleColorInputChange = (e) => {
-        console.log(" color change", e);
-    };
 
     const handleDragOver = (e) => e.preventDefault();
-
-    const handleInputChange = (e) => handleLabelChange(index, e.target.value);
 
     const handleStartDateChange = (e) =>
         handleDateChange(index, "start", e.target.value);
@@ -75,22 +62,7 @@ const DraggableBar = ({
             }}
         >
             <DragIndicatorIcon />
-            <input
-                ref={inputRef}
-                value={name}
-                onChange={handleInputChange}
-                style={{
-                    border: "none",
-                    backgroundColor: "transparent",
-                    color: "white",
-                }}
-            />
-            <input
-                type="color"
-                value={color}
-                onChange={handleColorInputChange}
-                style={{ marginLeft: "8px" }}
-            />
+            <h6>{name}</h6>
         </div>
     );
 };
@@ -157,7 +129,6 @@ const D3LabelNumeric = () => {
         y: 0,
         selectedBar: null,
     });
-    const menuRef = useRef();
 
     // const handleRightClick = (event, d) => {
     //     event.preventDefault(); // Prevent the default context menu
@@ -173,24 +144,6 @@ const D3LabelNumeric = () => {
     // const handleCloseMenu = () => {
     //     setContextMenu(null);
     // };
-
-    // Close menu when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            console.log("click outside event", event);
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
-                setMenu({ visible: false, x: 0, y: 0, selectedBar: null });
-            }
-        };
-
-        if (menu.visible) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [menu.visible]);
 
     useEffect(() => {
         d3.select(chartRef.current).selectAll("*").remove();
@@ -428,6 +381,16 @@ const D3LabelNumeric = () => {
         handleColorChange(selectedBarIndex, newColor);
     };
 
+    const handleTitleInputChange = (e, selectedBar) => {
+        const newValue = e.target.value;
+
+        const selectedBarIndex = data.findIndex(
+            (d) => d.name === selectedBar.name
+        );
+
+        handleLabelChange(selectedBarIndex, newValue);
+    };
+
     return (
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <div>
@@ -451,29 +414,11 @@ const D3LabelNumeric = () => {
             {/* Right click menu */}
             {menu.visible && (
                 <Menu
-                    ref={menuRef}
-                    style={{
-                        top: menu.y,
-                        left: menu.x,
-                    }}
-                >
-                    <p>{menu.selectedBar.name}</p>
-                    <button
-                        onClick={() =>
-                            alert(`Editing ${menu.selectedBar.name}`)
-                        }
-                    >
-                        Edit
-                    </button>
-                    <input
-                        type="color"
-                        value={menu.selectedBar.color}
-                        onChange={(e) =>
-                            handleColorInputChange(e, menu.selectedBar)
-                        }
-                        style={{ marginLeft: "8px" }}
-                    />
-                </Menu>
+                    menu={menu}
+                    setMenu={setMenu}
+                    handleTitleInputChange={handleTitleInputChange}
+                    handleColorInputChange={handleColorInputChange}
+                />
             )}
         </div>
     );
