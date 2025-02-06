@@ -261,8 +261,9 @@ const D3LabelNumeric = () => {
                 event.sourceEvent.stopPropagation(); // Prevent zooming while dragging
             })
             .on("drag", (event, d) => {
-                const [mouseX] = d3.pointer(event, svg.node()); // Get correct X in SVG space
-                const newStartYear = Math.floor(x.invert(mouseX)); // Convert back to data space
+                const [mouseX] = d3.pointer(event, svg.node());
+                const adjustedMouseX = mouseX + margin.left;
+                const newStartYear = Math.round(x.invert(adjustedMouseX));
 
                 console.log({
                     mouseX,
@@ -360,17 +361,6 @@ const D3LabelNumeric = () => {
         };
     }, [data]);
 
-    // document.addEventListener("contextmenu", (e) => {
-    //     // if e.target.id is one of the names in the data array, show custom modal instead to edit that element in the array
-    //     const entry = data.find((entry) => entry.name === e.target.id);
-
-    //     console.log("entry", entry);
-    //     if (entry) {
-    //         e.preventDefault();
-    //     }
-
-    //     // else do nothing
-    // });
     const handleColorInputChange = (e, selectedBar) => {
         const newColor = e.target.value;
 

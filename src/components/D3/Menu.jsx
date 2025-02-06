@@ -9,6 +9,10 @@ const MenuContainer = styled.div`
     padding: 10px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
 `;
 
 const Menu = ({
@@ -36,6 +40,7 @@ const Menu = ({
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
     return (
         <MenuContainer
             ref={menuRef}
@@ -53,7 +58,6 @@ const Menu = ({
                 type="color"
                 value={menu.selectedBar.color}
                 onChange={(e) => handleColorInputChange(e, menu.selectedBar)}
-                style={{ marginLeft: "8px" }}
             />
         </MenuContainer>
     );
