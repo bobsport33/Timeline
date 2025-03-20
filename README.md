@@ -1,70 +1,36 @@
-# Getting Started with Create React App
+# EOD Timeline
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This timeline is a React component that will live in a NextJS application. The NextJS application runs on React 19.0.0. The timeline component will be able to display a large variety of content on a timeline that is interactable. The changes in the timeline will need to call functions that update content on the site.
 
-## Available Scripts
+## Initial Requirements
 
-In the project directory, you can run:
+1. Drag and drop each row.
+2. Change study parameters from study design figure.
+   i.e., can we change the study period by shrinking the row within the diagram. To interconnect it with rest of front end.
+3. Customize colors for each bar.
+4. Customize both physical text and font selection.
+5. Allow for export to PowerPoint.
+6. Hover tool tips, customize what they say.
+7. Auto sizing.
+8. Should be able to delete and/or hide rows.
+   If delete, then remove parameter selection from actual cohort build.
+9. Allow users to zoom and scroll.
+10. Study design hover over on each tab (nice to have)
+    a. Would live as a pop up on each tab of go/eod
 
-### `npm start`
+## Latest Feedback
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Ideally would be able to reorder bars by dragging and dropping up and down instead of through the ledgend.
+    - Ledgend placement will probably need to move as well
+2. If zoomed in very far, would like to see month as well as year. Somehow create an updating x-axis that will show year when zoomed out and month when zoomed in to a certain point.
+3. Create two button
+    - Max Zoom Out: Zoom out to view the whole timeline
+    - Download: Export current visualization to image and download it to the users computer.
+4. When viewing year, drag and drop should snap to year. May need to adjust to month when zoomed in
+5. Add a delete button into the right click menu to delete a row.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Current bugs/changes needed
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+-   Zoom out does not allow to zoom out or scroll past the lowest or highest date.
+-   Date objects were having odd behavior, so built out x-axis using the year. Will need to convert back to date objects and figure out the issues.
+-   Drag and drop console logs for the year is not always accurate. Think this is an issue with the rounding.
